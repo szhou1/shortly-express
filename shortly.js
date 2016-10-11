@@ -73,8 +73,11 @@ var userCheck = function(user, callback) {
 };
 
 app.get('/logout', function(req, res) {
-  req.session.destroy();
-  res.redirect('/login');
+  console.log('inside LOGOUT');
+  req.session.destroy(function() {
+    console.log('redirecting to / ');
+    res.redirect('/');  
+  });
 });
 
 app.get('/create', authenticate,
