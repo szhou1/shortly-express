@@ -40,10 +40,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
 
     // delete user Phillip from db so it can be created later for the test
@@ -52,10 +52,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
 
@@ -63,7 +63,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done) {
+    beforeEach(function(done) {
       // create a user that we can then log-in with
       new User({
         'username': 'Phillip',
@@ -77,7 +77,7 @@ describe('', function() {
             'username': 'Phillip',
             'password': 'Phillip'
           }
-        };
+        };  
         // login via form and save session info
         requestWithSession(options, function(error, res, body) {
           done();
@@ -188,7 +188,7 @@ describe('', function() {
           'method': 'GET',
           'uri': 'http://127.0.0.1:4568/' + link.get('code')
         };
-
+        
         requestWithSession(options, function(error, res, body) {
           var currentLocation = res.request.href;
           expect(currentLocation).to.equal('http://roflzoo.com/');
@@ -213,7 +213,7 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  xdescribe('Privileged Access:', function() {
+  describe('Privileged Access:', function() {
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
@@ -238,7 +238,7 @@ describe('', function() {
 
   }); // 'Priviledged Access'
 
-  xdescribe('Account Creation:', function() {
+  describe('Account Creation:', function() {
 
     it('Signup creates a user record', function(done) {
       var options = {
@@ -251,9 +251,11 @@ describe('', function() {
       };
 
       request(options, function(error, res, body) {
+        // console.log(res);
         db.knex('users')
           .where('username', '=', 'Svnh')
           .then(function(res) {
+            console.log('res in test', res);
             if (res[0] && res[0]['username']) {
               var user = res[0]['username'];
             }
@@ -266,6 +268,7 @@ describe('', function() {
             };
           });
       });
+      console.log('done with test');
     });
 
     it('Signup logs in a new user', function(done) {
@@ -286,7 +289,7 @@ describe('', function() {
 
   }); // 'Account Creation'
 
-  xdescribe('Account Login:', function() {
+  describe('Account Login:', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
