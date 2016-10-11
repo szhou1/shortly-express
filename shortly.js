@@ -27,7 +27,10 @@ app.use(session({
   name: 'server-session-shortly',
   secret: 'secret_thing',
   saveUninitialized: true,
-  resave: true
+  resave: true,
+  cookie: {
+    maxAge: 10000
+  }
 }));
 
 var authenticate = function(req, res, next) {
@@ -69,29 +72,27 @@ var userCheck = function(user, callback) {
     });
 };
 
-app.get('/create', 
+app.get('/logout', function(req, res) {
+  req.session.destroy();
+  res.redirect('/login');
+});
+
+app.get('/create', authenticate,
 function(req, res) {
   console.log('GET /create');
-  if (!req.session.user) {
-    return res.redirect('/login');
-  }
-
   res.render('index');
 });
 
-app.get('/links',
+app.get('/links', authenticate,
 function(req, res) {
-  console.log('getT /links');
-  // if (!req.session.user) {
-  //   return res.redirect('/login');
-  // }
+  console.log('GET /links');
 
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
 });
 
-app.post('/links', 
+app.post('/links', authenticate, 
 function(req, res) {
   console.log('POST /links');
   var uri = req.body.url;
@@ -179,7 +180,6 @@ app.get('/*', function(req, res) {
   console.log(req.url);
   new Link({ code: req.params[0] }).fetch().then(function(link) {
     
-
     if (!link) {
       res.redirect('/');
     } else {
